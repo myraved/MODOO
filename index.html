@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MODO — Магазин одежды</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- ОБЩИЕ СТИЛИ И ПЕРЕМЕННЫЕ --- */
+        :root {
+            --bg-color: #FAFAFA;
+            --white: #FFFFFF;
+            --text-main: #1A1A1A;
+            --text-muted: #8E8E8E;
+            --accent: #B5858E;
+            --accent-hover: #a0757d;
+            --gray-light: #F2F2F2;
+            --border-color: #E5E5E5;
+            --font-family: 'Inter', sans-serif;
+            --nav-height: 70px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: #e0e0e0; /* Фон вне приложения */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* --- МАКЕТ ТЕЛЕФОНА --- */
+        .app-container {
+            width: 100%;
+            max-width: 414px; /* Ширина iPhone Max */
+            height: 100vh;
+            max-height: 896px;
+            background-color: var(--white);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        /* --- СТАТУС БАР --- */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--white);
+            z-index: 10;
+        }
+        .status-icons { display: flex; gap: 4px; align-items: center;}
+
+        /* --- ШАПКА --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: var(--white);
+            z-index: 10;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        .header-icons {
+            display: flex;
+            gap: 15px;
+        }
+        .icon {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        /* --- КОНТЕНТ (Экраны) --- */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: var(--nav-height);
+            scrollbar-width: none; /* Firefox */
+        }
+        .main-content::-webkit-scrollbar { display: none; } /* Chrome */
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* --- ЭКРАН 1: ГЛАВНАЯ --- */
+        .hero-section {
+            padding: 20px;
+        }
+        .hero-label {
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .hero-title {
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+        .hero-banner {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            height: 300px;
+            background-color: #dcdcdc;
+        }
+        .hero-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.6),
+                transparent);
+            color: var(--white);
+        }
+        .hero-overlay h2 { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
+        .hero-overlay p { font-size: 12px; margin-bottom: 12px; opacity: 0.9; }
+        .hero-btn {
+            background: var(--white);
+            color: var(--text-main);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        /* Категории */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 20px 10px;
+        }
+        .section-title { font-size: 18px; font-weight: 600; }
+        
+        .categories-scroll {
+            display: flex;
+            gap: 12px;
+            padding: 0 20px 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .categories-scroll::-webkit-scrollbar { display: none; }
+        .category-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-width: 70px;
+            cursor: pointer;
+        }
+        .category-img {
+            width: 70px;
+            height: 90px;
+            border-radius: 12px;
+            object-fit: cover;
+            background-color: var(--gray-light);
+        }
+        .category-name { font-size: 12px; color: var(--text-muted); }
+
+        /* Сетка товаров */
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 0 20px 20px;
+        }
+        .product-card {
+            position: relative;
+        }
+        .product-img-wrapper {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 3/4;
+            background-color: var(--gray-light);
+            margin-bottom: 8px;
+        }
+        .product-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .heart-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .product-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+        .product-price { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 2px;}
+
+        /* --- ЭКРАН 2: КАТАЛОГ --- */
+        .page-title { padding: 10px 20px; font-size: 24px; font-weight: 600; }
+        
+        .search-bar {
+            margin: 0 20px 15px;
+            position: relative;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border-radius: 10px;
+            border: none;
+            background: var(--gray-light);
+            font-family: var(--font-family);
+            font-size: 14px;
+            outline: none;
+        }
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            fill: var(--text-muted);
+        }
+
+        .filters-scroll {
+            display: flex;
+            gap: 8px;
+            padding: 0 20px 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .filters-scroll::-webkit-scrollbar { display: none; }
+        .filter-pill {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: var(--gray-light);
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+            border: none;
+        }
+
+
+.filter-pill.active {
+            background: var(--text-main);
+            color: var(--white);
+        }
+
+        /* --- ЭКРАН 3: КАРТОЧКА ТОВАРА --- */
+        .product-detail-img {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            position: relative;
+        }
+        .detail-nav {
+            position: absolute;
+            top: 50px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 5;
+        }
+        .nav-circle {
+            width: 40px;
+            height: 40px;
+            background: var(--white);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        .product-info {
+            padding: 20px;
+            background: var(--white);
+            border-radius: 24px 24px 0 0;
+            margin-top: -24px;
+            position: relative;
+        }
+        .detail-title { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+        .detail-price { font-size: 18px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 3px;}
+        .detail-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
+        
+        .option-label { font-size: 14px; font-weight: 600; margin-bottom: 12px; display: block; }
+        .color-options { display: flex; gap: 10px; margin-bottom: 24px; }
+        .color-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .color-circle.active { border-color: var(--text-main); }
+        
+        .size-options { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap;}
+        .size-pill {
+            padding: 10px 20px;
+            border-radius: 8px;
+            background: var(--gray-light);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .size-pill.active {
+            background: var(--white);
+            border-color: var(--text-main);
+        }
+
+        .add-to-cart-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: var(--font-family);
+        }
+
+        /* --- ЭКРАН 4: КОРЗИНА --- */
+        .cart-items { padding: 0 20px; }
+        .cart-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .cart-item-img {
+            width: 80px;
+            height: 100px;
+            border-radius: 12px;
+            object-fit: cover;
+            background-color: var(--gray-light);
+        }
+        .cart-item-info { flex: 1; }
+        .cart-item-title { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+        .cart-item-variant { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+        .cart-item-price { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 2px;}
+        
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 20px;
+        }
+        .cart-total-label { font-size: 18px; font-weight: 600; }
+        .cart-total-price { font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 2px;}
+        
+        .checkout-btn {
+            display: block;
+            width: calc(100% - 40px);
+            margin: 0 auto 20px;
+            padding: 16px;
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: var(--font-family);
+        }
+
+        /* --- НИЖНЯЯ НАВИГАЦИЯ --- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background: var(--white);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: env(safe-area-inset-bottom);
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            font-size: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .nav-item.active { color: var(--text-main); }
+        .nav-item svg { width: 22px; height: 22px; fill: currentColor; }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Статус бар (для реалистичности) -->
+        <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-icons">
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 9H3V12H1V9ZM5 6H7V12H5V6ZM9 3H11V12H9V3ZM13 0H15V12H13V0Z" fill="black"/></svg>
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 12L10.8 8.4C10 7.8 9 7.5 8 7.5C7 7.5 6 7.8 5.2 8.4L8 12ZM1.6 3.6C3.3 2.1 5.5 1.1 8 1.1C10.5 1.1 12.7 2.1 14.4 3.6L16 1.5C13.9 -0.4 11.1 -1.5 8 -1.5C4.9 -1.5 2.1 -0.4 0 1.5L1.6 3.6ZM4 6.3C5.1 5.4 6.5 4.9 8 4.9C9.5 4.9 10.9 5.4 12 6.3L13.6 4.2C11.9 2.8 10.1 2 8 2C5.9 2 4.1 2.8 2.4 4.2L4 6.3Z" fill="black"/></svg>
+                <svg width="22" height="12" viewBox="0 0 22 12" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="18" height="10" rx="2" stroke="black" stroke-width="1"/><path d="M21 4V8C21.6 8 22 7.6 22 7V5C22 4.4 21.6 4 21 4Z" fill="black"/><rect x="3" y="3" width="12" height="6" rx="1" fill="black"/></svg>
+            </div>
+        </div>
+
+        <!-- Шапка -->
+        <header class="header">
+            <div class="logo">M O D O</div>
+            <div class="header-icons">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <!-- ЭКРАН 1: ГЛАВНАЯ -->
+            <section id="screen-home" class="screen active">
+                <div class="hero-section">
+                    <div class="hero-label">НОВАЯ КОЛЛЕКЦИЯ</div>
+                    <h1 class="hero-title">Стиль. Комфорт. Ты.</h1>
+                    <div class="hero-banner">
+                        <!-- Замените ссылку на свою картинку, если нужно -->
+                        <img src="НВколл.jpg" alt="Модель в свитере">
+                        <div class="hero-overlay">
+                            <h2>Новая коллекция</h2>
+                            <p>Стиль. Комфорт. Ты.</p>
+                            <button class="hero-btn" onclick="switchScreen('screen-catalog', 'nav-catalog')">Смотреть коллекцию →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h2 class="section-title">Категории</h2>
+                </div>
+                <div class="categories-scroll">
+                    <div class="category-item" onclick="switchScreen('screen-catalog', 'nav-catalog')">
+                        <img src="худи2.jpg" class="category-img" alt="Худи">
+                        <span class="category-name">Худи</span>
+                    </div>
+                    <div class="category-item" onclick="switchScreen('screen-catalog', 'nav-catalog')">
+                        <img src="топ.jpg" class="category-img" alt="Топы">
+                        <span class="category-name">Топы</span>
+                    </div>
+                    <div class="category-item" onclick="switchScreen('screen-catalog', 'nav-catalog')">
+                        <img src="пиджак.jpg" class="category-img" alt="Пиджаки">
+                        <span class="category-name">Пиджаки</span>
+                    </div>
+                    <div class="category-item" onclick="switchScreen('screen-catalog', 'nav-catalog')">
+                        <img src="джинсы.jpg" class="category-img" alt="Джинсы">
+                        <span class="category-name">Джинсы</span>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h2 class="section-title">Популярные товары</h2>
+                </div>
+                <div class="product-grid">
+                    <div class="product-card" onclick="switchScreen('screen-detail', 'nav-catalog')">
+                        <div class="product-img-wrapper">
+                            <img src="худи.jpg" alt="Худи Oversize">
+                            <div class="heart-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="product-title">Худи Oversize</div>
+                        <div class="product-price">2 990 ₽</div>
+                    </div>
+                    <div class="product-card" onclick="switchScreen('screen-detail', 'nav-catalog')">
+                        <div class="product-img-wrapper">
+                            <img src="лонгслив.jpg" alt="Лонгслив">
+                            <div class="heart-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="product-title">Лонгслив</div>
+                        <div class="product-price">1 990 ₽</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ЭКРАН 2: КАТАЛОГ -->
+            <section id="screen-catalog" class="screen">
+                <h1 class="page-title">Каталог</h1>
+                
+                <div class="search-bar">
+                    <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <input type="text" placeholder="Поиск по товарам">
+                </div>
+
+                <div class="filters-scroll">
+                    <button class="filter-pill active">Все</button>
+                    <button class="filter-pill">Худи</button>
+                    <button class="filter-pill">Футболки</button>
+                    <button class="filter-pill">Платья</button>
+                </div>
+
+                <div class="product-grid">
+                    <!-- Товар 1 -->
+                    <div class="product-card" onclick="switchScreen('screen-detail', 'nav-catalog')">
+                        <div class="product-img-wrapper">
+                            <img src="худи2.jpg" alt="Худи">
+                            <div class="heart-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="product-title">Худи Oversize</div>
+                        <div class="product-price">2 990 ₽</div>
+                    </div>
+                    <!-- Товар 2 -->
+                    <div class="product-card" onclick="switchScreen('screen-detail', 'nav-catalog')">
+                        <div class="product-img-wrapper">
+                            <img src="лонгслив.jpg" alt="Лонгслив">
+                            <div class="heart-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="product-title">Лонгслив базовый</div>
+                        <div class="product-price">1 990 ₽</div>
+                    </div>
+                    <!-- Товар 3 -->
+                    <div class="product-card" onclick="switchScreen('screen-detail', 'nav-catalog')">
+                        <div class="product-img-wrapper">
+                            <img src="пиджак.jpg" alt="Пиджак">
+                            <div class="heart-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="product-title">Пиджак Oversize</div>
+                        <div class="product-price">4 990 ₽</div>
+                    </div>
+                    <!-- Товар 4 -->
+                    <div class="product-card" onclick="switchScreen('screen-detail', 'nav-catalog')">
+                        <div class="product-img-wrapper">
+                            <img src="джинсы.jpg" alt="Джинсы">
+                            <div class="heart-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="product-title">Джинсы wide leg</div>
+                        <div class="product-price">3 490 ₽</div>
+                    </div>
+                    </div>
+            </section>
+
+            <!-- ЭКРАН 3: КАРТОЧКА ТОВАРА -->
+            <section id="screen-detail" class="screen">
+                <div style="position: relative;">
+                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop" class="product-detail-img" alt="Свитер Oversize">
+                    <div class="detail-nav">
+                        <div class="nav-circle" onclick="switchScreen('screen-catalog', 'nav-catalog')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                        </div>
+                        <div class="nav-circle">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-info">
+                    <h1 class="detail-title">Свитер Oversize</h1>
+                    <div class="detail-price">2 990 ₽</div>
+                    <p class="detail-desc">Мягкий трикотаж • свободная посадка</p>
+                    
+                    <span class="option-label">Цвет: Черный</span>
+                    <div class="color-options">
+                        <div class="color-circle active" style="background: #1A1A1A;"></div>
+                        <div class="color-circle" style="background: #D3D3D3;"></div>
+                        <div class="color-circle" style="background: #E8DCD1;"></div>
+                    </div>
+
+                    <span class="option-label">Размер</span>
+                    <div class="size-options">
+                        <div class="size-pill">XS</div>
+                        <div class="size-pill">S</div>
+                        <div class="size-pill active">M</div>
+                        <div class="size-pill">L</div>
+                        <div class="size-pill">XL</div>
+                    </div>
+
+                    <button class="add-to-cart-btn" onclick="switchScreen('screen-cart', 'nav-cart')">Добавить в корзину</button>
+                </div>
+            </section>
+
+            <!-- ЭКРАН 4: КОРЗИНА -->
+            <section id="screen-cart" class="screen">
+                <h1 class="page-title">Корзина</h1>
+                
+                <div class="cart-items">
+                    <div class="cart-item">
+                        <img src="худи.jpg" class="cart-item-img" alt="Худи">
+                        <div class="cart-item-info">
+                            <div class="cart-item-title">Худи Oversize</div>
+                            <div class="cart-item-variant">Черный, M</div>
+                            <div class="cart-item-price">2 990 ₽</div>
+                        </div>
+                    </div>
+                    
+                    <div class="cart-item">
+                        <img src="свитер.jpg" class="cart-item-img" alt="Свитер">
+                        <div class="cart-item-info">
+                            <div class="cart-item-title">Свитер вязаный</div>
+                            <div class="cart-item-variant">Молочный, M</div>
+                            <div class="cart-item-price">2 490 ₽</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cart-total">
+                    <div class="cart-total-label">Итого:</div>
+                    <div class="cart-total-price">5 480 ₽</div>
+                </div>
+
+                <button class="checkout-btn">Оформить заказ</button>
+            </section>
+
+
+</main>
+
+        <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+        <nav class="bottom-nav">
+            <div class="nav-item" id="nav-home" onclick="switchScreen('screen-home', 'nav-home')">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span>Главная</span>
+            </div>
+            <div class="nav-item active" id="nav-catalog" onclick="switchScreen('screen-catalog', 'nav-catalog')">
+                <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+                <span>Каталог</span>
+            </div>
+            <div class="nav-item" id="nav-cart" onclick="switchScreen('screen-cart', 'nav-cart')">
+                <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                <span>Корзина</span>
+            </div>
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span>Профиль</span>
+            </div>
+        </nav>
+    </div>
+
+    <!-- ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ -->
+    <script>
+        function switchScreen(screenId, navId) {
+            // Скрываем все экраны
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            // Показываем нужный экран
+            document.getElementById(screenId).classList.add('active');
+
+            // Обновляем навигацию
+            if (navId) {
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                const activeNav = document.getElementById(navId);
+                if(activeNav) activeNav.classList.add('active');
+            }
+            
+            // Скролл наверх при смене экрана
+            document.querySelector('.main-content').scrollTop = 0;
+        }
+
+        // Логика для выбора размера
+        document.querySelectorAll('.size-pill').forEach(pill => {
+            pill.addEventListener('click', function() {
+                document.querySelectorAll('.size-pill').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Логика для выбора цвета
+        document.querySelectorAll('.color-circle').forEach(circle => {
+            circle.addEventListener('click', function() {
+                document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
